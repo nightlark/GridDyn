@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows-latest, macos-latest]
     
     steps:
     - name: Dump GitHub context
@@ -41,18 +41,14 @@ jobs:
       run: |
         brew update
         brew install boost zmq
-    - name: Check path
-      if: runner.os == 'Linux'
-      run: ls /usr/local/share/boost/1.69.0/lib
     - uses: actions/checkout@v1
     - name: Configure
       env:
         RUNNER_OS: ${{ runner.os }}
       run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then export JOB_OPTIONS="-DBOOST_LIBRARYDIR=/usr/local/share/boost/1.69.0/lib"; fi
         echo “BOOST_ROOT=$BOOST_ROOT”
         mkdir build && cd build
-        cmake $JOB_OPTIONS -DBOOST_INSTALL_PATH=$BOOST_ROOT -DENABLE_PACKAGE_BUILD=ON -DENABLE_GRIDDYN_TESTS=OFF -DBUILD_GRIDDYN_SHARED_LIBRARY=ON -DAUTOBUILD_KLU=ON -DBUILD_RELEASE_ONLY=ON -DENABLE_FMI_EXPORT=ON -DENABLE_HELICS_EXECUTABLE=ON -DAUTOBUILD_HELICS=ON -DCMAKE_BUILD_TYPE=Release ..
+        cmake -DBOOST_INSTALL_PATH=$BOOST_ROOT -DENABLE_PACKAGE_BUILD=ON -DENABLE_GRIDDYN_TESTS=OFF -DBUILD_GRIDDYN_SHARED_LIBRARY=ON -DAUTOBUILD_KLU=ON -DBUILD_RELEASE_ONLY=ON -DENABLE_FMI_EXPORT=ON -DENABLE_HELICS_EXECUTABLE=ON -DAUTOBUILD_HELICS=ON -DCMAKE_BUILD_TYPE=Release ..
     - name: Build
       run: cmake --build . --parallel
     - name: Package
