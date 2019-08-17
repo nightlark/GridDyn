@@ -1,0 +1,50 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  release-packages:
+    name: Create release package for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Dump strategy context
+      env:
+        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+      run: echo "$STRATEGY_CONTEXT"
+    - name: Dump matrix context
+      env:
+        MATRIX_CONTEXT: ${{ toJson(matrix) }}
+      run: echo "$MATRIX_CONTEXT"
+    - name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: echo "$JOB_CONTEXT"
+    - name: Dump runner context
+      env:
+        RUNNER_CONTEXT: ${{ toJson(runner) }}
+      run: echo "$RUNNER_CONTEXT"
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
+    
+    - uses: actions/checkout@v1
+    - name: configure
+      run: |
+        mkdir build && cd build
+        cmake -DENABLE_PACKAGE_BUILD=ON -DENABLE_GRIDDYN_TESTS=OFF -DBUILD_GRIDDYN_SHARED_LIBRARY=ON -DAUTOBUILD_KLU=ON -DBUILD_RELEASE_ONLY=ON -DENABLE_FMI_EXPORT=ON -DENABLE_HELICS_EXECUTABLE=ON -DAUTOBUILD_HELICS=ON -DCMAKE_BUILD_TYPE=Release ..
+    - name: build
+      run: cmake --build . --parallel
+    - name: package
+      run: cpack --version
+    - name: release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
