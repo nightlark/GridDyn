@@ -36,11 +36,14 @@ jobs:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: echo "$STEPS_CONTEXT"
     
-    - name: Install dependencies
+    - name: Brew Install
       if: runner.os == 'macOS'
       run: |
         brew update
         brew install boost
+    - name: Check path
+      if: runner.os == 'Linux'
+      run: ls /usr/local/share/boost/1.69.0
     - uses: actions/checkout@v1
     - name: Configure
       run: |
