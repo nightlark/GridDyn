@@ -40,7 +40,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
-        brew install boost zmq
+        brew install boost zmq libomp
     - uses: actions/checkout@v1
     - name: Configure
       env:
