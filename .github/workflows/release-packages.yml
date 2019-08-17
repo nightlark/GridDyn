@@ -37,7 +37,7 @@ jobs:
       run: echo "$STEPS_CONTEXT"
     
     - name: Install dependencies
-      if: runner.os == macOS
+      if: runner.os == "macOS"
       run: |
         brew update
         brew install boost
