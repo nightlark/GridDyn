@@ -43,7 +43,7 @@ jobs:
         brew install boost zmq
     - name: Check path
       if: runner.os == 'Linux'
-      run: ls /usr/local/share/boost/1.69.0/libs
+      run: ls /usr/local/share/boost/1.69.0/lib
     - uses: actions/checkout@v1
     - name: Configure
       env:
