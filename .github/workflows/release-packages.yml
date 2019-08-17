@@ -36,11 +36,6 @@ jobs:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: echo "$STEPS_CONTEXT"
     
-    - name: apt-get
-      if: runner.os == 'Linux'
-      run: |
-        apt-get update
-        apt-get install libboost-dev libzmq5-dev
     - name: brew install
       if: runner.os == 'macOS'
       run: |
@@ -48,13 +43,12 @@ jobs:
         brew install boost zmq
     - name: Check path
       if: runner.os == 'Linux'
-      run: ls /usr/local/share/boost/1.69.0
+      run: ls /usr/local/share/boost/1.69.0/libs
     - uses: actions/checkout@v1
     - name: Configure
       env:
         RUNNER_OS: ${{ runner.os }}
       run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then unset BOOST_ROOT
         echo “BOOST_ROOT=$BOOST_ROOT”
         mkdir build && cd build
         cmake -DBOOST_INSTALL_PATH=$BOOST_ROOT -DENABLE_PACKAGE_BUILD=ON -DENABLE_GRIDDYN_TESTS=OFF -DBUILD_GRIDDYN_SHARED_LIBRARY=ON -DAUTOBUILD_KLU=ON -DBUILD_RELEASE_ONLY=ON -DENABLE_FMI_EXPORT=ON -DENABLE_HELICS_EXECUTABLE=ON -DAUTOBUILD_HELICS=ON -DCMAKE_BUILD_TYPE=Release ..
