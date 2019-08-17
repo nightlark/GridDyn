@@ -46,5 +46,6 @@ jobs:
     - name: package
       run: cpack --version
     - name: release
+      run: echo "Add to GitHub Release"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
