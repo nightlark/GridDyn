@@ -45,9 +45,8 @@ jobs:
     - name: dump cmake location
       run: |
         which cmake
-        ls /c/Program Files/CMake/bin/
-        echo "=========="
-        ls $(dirname $(which cmake))
+        echo "SHELL=$SHELL"
+        ls /c/Program\ Files/CMake/bin/
     - uses: actions/checkout@v1
     - name: Configure
       env:
