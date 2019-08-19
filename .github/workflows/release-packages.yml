@@ -1,0 +1,64 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  release-packages:
+    name: Create release package for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        # [windows-latest, macos-latest, ubuntu-latest]
+    
+    steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Dump strategy context
+      env:
+        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+      run: echo "$STRATEGY_CONTEXT"
+    - name: Dump matrix context
+      env:
+        MATRIX_CONTEXT: ${{ toJson(matrix) }}
+      run: echo "$MATRIX_CONTEXT"
+    - name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: echo "$JOB_CONTEXT"
+    - name: Dump runner context
+      env:
+        RUNNER_CONTEXT: ${{ toJson(runner) }}
+      run: echo "$RUNNER_CONTEXT"
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
+    
+    - name: brew install
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install boost zmq sundials
+    - name: dump cmake location
+      run: |
+        which cmake
+        ls "/c/Program Files/CMake/bin/"
+    - uses: actions/checkout@v1
+    - name: Configure
+      env:
+        RUNNER_OS: ${{ runner.os }}
+      run: |
+        echo “BOOST_ROOT=$BOOST_ROOT”
+        mkdir build && cd build
+        cmake -DBOOST_INSTALL_PATH=$BOOST_ROOT -DENABLE_PACKAGE_BUILD=ON -DENABLE_GRIDDYN_TESTS=OFF -DBUILD_GRIDDYN_SHARED_LIBRARY=ON -DBUILD_RELEASE_ONLY=ON -DENABLE_FMI_EXPORT=ON -DENABLE_HELICS_EXECUTABLE=ON -DAUTOBUILD_HELICS=ON -DCMAKE_BUILD_TYPE=Release ..
+    - name: Build
+      run: cmake --build build --parallel --config Release
+    - name: Package
+      run: "/c/Program Files/CMake/bin/cpack" --version
+    - name: Release
+      run: echo "Add to GitHub Release"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
