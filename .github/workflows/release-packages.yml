@@ -46,7 +46,6 @@ jobs:
       run: |
         which cmake
         ls "/c/Program Files/CMake/bin/"
-        Write-Output "Yay"
     - uses: actions/checkout@v1
     - name: Configure
       env:
@@ -58,9 +57,7 @@ jobs:
     - name: Build
       run: cmake --build build --parallel --config Release
     - name: Package
-      run: |
-        export CMAKE_DIR=dirname $(which cmake)
-        ${CMAKE_DIR}/cpack --version
+      run: "/c/Program Files/CMake/bin/cpack" --version
     - name: Release
       run: echo "Add to GitHub Release"
       env:
