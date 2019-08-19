@@ -55,7 +55,7 @@ jobs:
     - name: Build
       run: cmake --build build --parallel --config Release
     - name: Package
-      run: cpack --version
+      run: $(dirname $(which cmake))/cpack --version
     - name: Release
       run: echo "Add to GitHub Release"
       env:
